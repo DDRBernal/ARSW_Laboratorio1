@@ -9,6 +9,7 @@ public class SearchThread extends Thread{
 
     private String ipaddress;
     private int rangeBegin, rangeEnd;
+    private int BLACK_LIST_ALARM_COUNT = 5;
 
     public SearchThread(String ipaddress, int rangeBegin, int rangeEnd){
         this.ipaddress = ipaddress;
@@ -25,9 +26,10 @@ public class SearchThread extends Thread{
 
         int checkedListsCount=0;
 
-        for (int i=0;i<range && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
+        for (int i=rangeBegin;i<rangeEnd && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
             checkedListsCount++;
             if (skds.isInBlackListServer(i, ipaddress)){
+                System.out.println("se contro la ip");
                 blackListOcurrences.add(i);
                 ocurrencesCount++;
             }

@@ -11,11 +11,13 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+
 /**
  *
  * @author hcadavid
  */
 public class HostBlackListsValidator {
+    ArrayList<SearchThread> listaDeHilos = new ArrayList<SearchThread>();
 
     private static final int BLACK_LIST_ALARM_COUNT=5;
     
@@ -29,7 +31,7 @@ public class HostBlackListsValidator {
      * @param ipaddress suspicious host's IP address.
      * @return  Blacklists numbers where the given host's IP address was found.
      */
-    public List<Integer> checkHost(String ipaddress){
+    public List<Integer> checkHost(int N , String ipaddress){
         
         LinkedList<Integer> blackListOcurrences=new LinkedList<>();
         
