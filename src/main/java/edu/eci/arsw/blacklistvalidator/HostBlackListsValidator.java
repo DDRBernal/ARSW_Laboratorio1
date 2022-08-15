@@ -6,21 +6,21 @@
 package edu.eci.arsw.blacklistvalidator;
 
 import edu.eci.arsw.spamkeywordsdatasource.HostBlacklistsDataSourceFacade;
-import java.util.LinkedList;
-import java.util.List;
+import edu.eci.arsw.threads.BlackListThread;
+
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.util.stream.Collectors;
 
 /**
  *
  * @author hcadavid
  */
-public class HostBlackListsValidator {
-    ArrayList<SearchThread> listaDeHilos = new ArrayList<SearchThread>();
-
+public class HostBlackListsValidator{
     private static final int BLACK_LIST_ALARM_COUNT=5;
-    
+    private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
+
     /**
      * Check the given host's IP address in all the available black lists,
      * and report it as NOT Trustworthy when such IP was reported in at least
@@ -31,41 +31,67 @@ public class HostBlackListsValidator {
      * @param ipaddress suspicious host's IP address.
      * @return  Blacklists numbers where the given host's IP address was found.
      */
-    public List<Integer> checkHost(int N , String ipaddress){
-        
-        LinkedList<Integer> blackListOcurrences=new LinkedList<>();
-        
+    public String checkHost(int numberThreads, String ipaddress){
+        String blackListOcurrences="";
         int ocurrencesCount=0;
-        
         HostBlacklistsDataSourceFacade skds=HostBlacklistsDataSourceFacade.getInstance();
-        
         int checkedListsCount=0;
-
-        //
-
-        for (int i=0;i<skds.getRegisteredServersCount() && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++){
-            checkedListsCount++;
-            if (skds.isInBlackListServer(i, ipaddress)){
-                blackListOcurrences.add(i);
-                ocurrencesCount++;
+        ArrayList<BlackListThread> threadList = createThreadList(numberThreads,ipaddress,skds);
+        for (int i=0;i<numberThreads && ocurrencesCount<BLACK_LIST_ALARM_COUNT;i++) {
+            threadList.get(i).start();
+            ocurrencesCount+= threadList.get(i).getBlackListOcurrences().size() > 0 ? 1 : 0;
+            blackListOcurrences = threadList.get(i).getBlackListOcurrences().stream().map(Object::toString)
+                    .collect(Collectors.joining(", "));
+        }
+        for (BlackListThread t : threadList){
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                //e.printStackTrace();
             }
         }
-        
-        if (ocurrencesCount>=BLACK_LIST_ALARM_COUNT){
-            skds.reportAsNotTrustworthy(ipaddress);
-        }
-        else{
-            skds.reportAsTrustworthy(ipaddress);
-        }                
-        
-        LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
-        
+        System.out.println(serversFounded(threadList));
+        //LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
         return blackListOcurrences;
     }
-    
-    
-    private static final Logger LOG = Logger.getLogger(HostBlackListsValidator.class.getName());
-    
-    
-    
+
+    /**
+     * Esta funcion permite retornar una lista de valores donde una ip fue encontrada en las black list
+     * @param list
+     * @return una lista con los servers donde se encuentra la ip
+     */
+    public ArrayList<Integer> serversFounded(ArrayList<BlackListThread> list){
+        ArrayList<Integer> serversFounded = new ArrayList<>();
+        for (BlackListThread thread : list) {
+            if (thread.getBlackListOcurrences().size()>0) {
+                for (Integer number : thread.getBlackListOcurrences()){
+                    serversFounded.add(number);
+                }
+            }
+        }
+        if (serversFounded.size() >= BLACK_LIST_ALARM_COUNT) skds.reportAsNotTrustworthy(ipaddress);
+        else { skds.reportAsTrustworthy(ipaddress); }
+        return serversFounded;
+    }
+
+    /**
+     * Permite dividir la busqueda de la ip en las blacklist, en n hilos
+     * @param numberThreads
+     * @param ipaddress
+     * @param skds
+     * @return
+     */
+    private ArrayList<BlackListThread> createThreadList(int numberThreads, String ipaddress, HostBlacklistsDataSourceFacade skds) {
+        int rangeBegin = 0;
+        int rangeEnd = skds.getRegisteredServersCount()/numberThreads;
+        ArrayList<BlackListThread> threadList = new ArrayList<>();
+        for (int i = 0 ; i < numberThreads; i++){
+            threadList.add(new BlackListThread(rangeBegin,rangeEnd,ipaddress));
+            rangeBegin += skds.getRegisteredServersCount() / numberThreads;
+            rangeEnd += skds.getRegisteredServersCount() / numberThreads;
+            //Esta condicion es para asegurar recorrer los ultimos valores cuando numberThreads es impar
+            if (i==numberThreads-1) rangeEnd = skds.getRegisteredServersCount();
+        }
+        return threadList;
+    }
 }
