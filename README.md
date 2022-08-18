@@ -8,7 +8,8 @@ De acuerdo con lo revisado en las lecturas, complete las clases CountThread, par
 Complete el método main de la clase CountMainThreads para que:
 1) Cree 3 hilos de tipo CountThread, asignándole al primero el intervalo [0..99], al segundo [99..199], y al tercero [200..299].
 
-public class CountThread extends Thread{
+public class CountThread extends Thread {
+
     private int A;
     private int B;
     public CountThread(int A, int B){
@@ -85,17 +86,17 @@ Parte IV - Ejercicio Black List Search
 
 Según la ley de Amdahls:
 
-![image](https://user-images.githubusercontent.com/46855679/185297021-de2c8406-66a3-4f6f-b945-c696a642deb9.png)
+• ![image](https://user-images.githubusercontent.com/46855679/185297021-de2c8406-66a3-4f6f-b945-c696a642deb9.png)
 , donde S(n) es el mejoramiento teórico del desempeño, P la fracción paralelizable del algoritmo, y n el número de hilos, a mayor n, mayor debería ser dicha mejora. Por qué el mejor desempeño no se logra con los 500 hilos?, cómo se compara este desempeño cuando se usan 200?.
   
   RTA: Porque existe un limite de tiempo del procesador, asi se realicen mas subprocesos el limite de tiempo sera el mismo, por eso como vemos en la grafica, asi apliquemos mas threads, el tiempo siempre va acercarse a un valor especifico.
 
-Cómo se comporta la solución usando tantos hilos de procesamiento como núcleos comparado con el resultado de usar el doble de éste?.
+• Cómo se comporta la solución usando tantos hilos de procesamiento como núcleos comparado con el resultado de usar el doble de éste?.
 
   RTA: Existe una enorme diferencia entre usar un hilo y según los núcleos del procesador (en este caso 8 hilos), si aplicamos el doble (16) claramente hay una diferencia también, pero no es tan notoria pues a partir de 8 que es la cantidad de núcleos de nuestro pc, los tiempos se aproximaran cada vez mas a un numero.
   
-De acuerdo con lo anterior, si para este problema en lugar de 100 hilos en una sola CPU se pudiera usar 1 hilo en cada una de 100 máquinas hipotéticas, la ley de Amdahls se aplicaría mejor?. Si en lugar de esto se usaran c hilos en 100/c máquinas distribuidas (siendo c es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta.
+• De acuerdo con lo anterior, si para este problema en lugar de 100 hilos en una sola CPU se pudiera usar 1 hilo en cada una de 100 máquinas hipotéticas, la ley de Amdahls se aplicaría mejor?. Si en lugar de esto se usaran c hilos en 100/c máquinas distribuidas (siendo c es el número de núcleos de dichas máquinas), se mejoraría?. Explique su respuesta.
 
-  •	RTA: En la gráfica podemos observar que a partir de 40 hilos aproximadamente el cambio de esto es, en ese orden de ideas, si existieran cada proceso por maquina con sus núcleos, no habría mucha diferencia, ya que sigue el tiempo en que se usa el procesador de igual manera como si tuviera mas núcleos
+  RTA: En la gráfica podemos observar que a partir de 40 hilos aproximadamente el cambio de esto es, en ese orden de ideas, si existieran cada proceso por maquina con sus núcleos, no habría mucha diferencia, ya que sigue el tiempo en que se usa el procesador de igual manera como si tuviera mas núcleos
 
 
