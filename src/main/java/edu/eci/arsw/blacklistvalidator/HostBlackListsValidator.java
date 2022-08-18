@@ -48,7 +48,6 @@ public class HostBlackListsValidator{
             } catch (InterruptedException e) {
             }
         }
-        System.out.println(serversFounded(threadList,ipaddress));
         LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{threadList, skds.getRegisteredServersCount()});
         return blackListOcurrences;
     }
@@ -67,8 +66,6 @@ public class HostBlackListsValidator{
                 }
             }
         }
-        //if (serversFounded.size() >= BLACK_LIST_ALARM_COUNT) skds.reportAsNotTrustworthy(ipaddress);
-        //else { skds.reportAsTrustworthy(ipaddress); }
         return serversFounded;
     }
 

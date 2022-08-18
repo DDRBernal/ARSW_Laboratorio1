@@ -28,10 +28,8 @@ public class BlackListThread extends Thread{
             checkedListsCount++;
             if (skds.isInBlackListServer(j, ipaddress)) {
                 blackListOcurrences.add(j);
-                //ocurrencesCount++;
             }
         }
-        //LOG.log(Level.INFO, "Checked Black Lists:{0} of {1}", new Object[]{checkedListsCount, skds.getRegisteredServersCount()});
     }
 
     public ArrayList<Integer> getBlackListOcurrences(){

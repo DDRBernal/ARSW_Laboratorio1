@@ -13,14 +13,14 @@ public class CountThreadsMain {
 
     public static void main(String a[]){
         /*
-        CountThread thread1 = new CountThread();
-        thread1.run(0,100);
+        CountThread thread1 = new CountThread(0,100);
+        thread1.run();
 
-        CountThread thread2 = new CountThread();
-        thread2.run(99,200);
+        CountThread thread2 = new CountThread(99,200);
+        thread2.run();
 
-        CountThread thread3 = new CountThread();
-        thread3.run(200,300);
+        CountThread thread3 = new CountThread(200,300);
+        thread3.run();
         */
         //Asincronica
         CountThread thread = new CountThread(0,100);
